@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
@@ -71,33 +71,44 @@ class Profile(models.Model):
         return self.user.username
 
 
-class Project(models.Model):
-    name = models.CharField(max_length=30, blank=False)
-    description = models.TextField(max_length=300, blank=True)
-    creator = models.ForeignKey(User)
+# class Project(models.Model):
+#     name = models.CharField(max_length=30, blank=False)
+#     description = models.TextField(max_length=300, blank=True)
+#     creator = models.ManyToManyField(User)
+#
+#
+# class ProjectMember(models.Model):
+#     project = models.ForeignKey(Project)
+#     user = models.ForeignKey(User)
 
 
-class ProjectMember(models.Model):
-    project = models.ForeignKey(Project)
-    user = models.ForeignKey(User)
+# class Block(models.Model):
+#     name = models.CharField(max_length=30)
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#     BLOCK_TYPE_CHOICES = (
+#         (1, 'to_do'),
+#         (2, 'in_progress'),
+#         (3, 'done'),
+#         (0, 'new')
+#     )
+#
+#     block_type = models.PositiveSmallIntegerField(choices=BLOCK_TYPE_CHOICES)
 
 
-class Block(models.Model):
-    name = models.CharField(max_length=30)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    BLOCK_TYPE_CHOICES = (
-        (1, 'to_do'),
-        (2, 'in_progress'),
-        (3, 'done'),
-        (0, 'new')
-    )
+# class Task(models.Model):
+#     name = models.CharField(max_length=30, blank=False)
+#     description = models.TextField(max_length=300, blank=True)
+#     creator = models.ForeignKey(User)
+#     executor = models.ForeignKey(User)
+#     block = models.ForeignKey(Block)
 
-    block_type = models.PositiveSmallIntegerField(choices=BLOCK_TYPE_CHOICES)
+# class TaskDocument(models.Model):
+#     document = models.FileField(blank=True)
+#     creator = models.ForeignKey(User)
+#     task = models.ForeignKey(Task)
 
-
-class Task(models.Model):
-    name = models.CharField(max_length=30, blank=False)
-    description = models.TextField(max_length=300, blank=True)
-    creator = models.ForeignKey(User)
-    executor = models.ForeignKey(User)
-    block = models.ForeignKey(Block)
+# class TaskComment(models.Model):
+#     body = models.TextField(max_length=100, blank=True)
+#     created_at = models.DateTimeField()
+#     creator = models.ForeignKey(User)
+#     task = models.ForeignKey(Task)
