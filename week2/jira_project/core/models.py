@@ -30,8 +30,8 @@ class Block(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=30, blank=False)
     description = models.TextField(max_length=300, blank=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    # executor = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
+    executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
 
 
