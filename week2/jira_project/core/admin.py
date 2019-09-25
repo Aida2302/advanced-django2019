@@ -6,5 +6,6 @@ from core.models import Project
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'creator',)
+    pass
+    # list_display = ('id', 'name', 'creator_name', 'creator_id', )
 
