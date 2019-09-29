@@ -11,9 +11,6 @@ from core.models import Project
 from core.serializers import ProjectSerializer
 
 
-# from core.permissions import IsDeveloperPermission, CanCreateProjectPermission
-
-
 class ProjectListViewSet(mixins.RetrieveModelMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):

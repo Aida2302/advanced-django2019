@@ -1,11 +1,16 @@
 from django.contrib import admin
 
 # Register your models here.
-from core.models import Project
+from core.models import Project, Task
 
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    pass
-    # list_display = ('id', 'name', 'creator_name', 'creator_id', )
+    list_display = ('id', 'name', 'creator',)
+
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'block',)
+
 
