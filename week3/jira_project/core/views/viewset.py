@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from core.models import Project
-from core.serializers import ProjectSerializer
+from core.models import Project, Block
+from core.serializers import ProjectSerializer, BlockSerializer
 
 
 class ProjectListViewSet(mixins.RetrieveModelMixin,
@@ -35,6 +35,10 @@ class ProjectViewSet(mixins.ListModelMixin,
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
 
+    def get_queryset(self):
+        queryset = self.queryset.filter(creator=self.request.user)
+        return queryset
+
     @action(methods=['GET'], detail=False)
     def my(self, request):
         projects = Project.objects.filter(creator=self.request.user)
@@ -56,9 +60,21 @@ class ProjectViewSet(mixins.ListModelMixin,
         return Response(res)
 
 
+class BlockViewSet(mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Block.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = BlockSerializer
 
+    def perform_create(self, serializer):
+        return serializer.save(name=self.request.data['name'],
+                               status=self.request.data['status'],
+                               project_id=self.request.data['project_id'])
 
-
+    def get_queryset(self):
+        return self.queryset.all()
 
 
 

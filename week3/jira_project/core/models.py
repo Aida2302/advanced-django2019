@@ -78,10 +78,10 @@ class Block(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     status = models.PositiveSmallIntegerField(choices=TASK_STATUSES, default=TASK_NEW)
 
-    done_tasks = TaskDoneManager()
-    todo_tasks = TaskTodoManager()
-    new_tasks = TaskNewManager()
-    progress_tasks = TaskProgressManager()
+    # done_tasks = TaskDoneManager()
+    # todo_tasks = TaskTodoManager()
+    # new_tasks = TaskNewManager()
+    # progress_tasks = TaskProgressManager()
 
     def __str__(self):
         return f'{self.name}: {self.project}'
@@ -93,7 +93,7 @@ class Task(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
     executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
+    # project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
 
     class Meta:
         ordering = ('name', 'block',)
