@@ -19,6 +19,7 @@ class RegisterUserAPIView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            logger.info(f"{self} created user")
             logger.warning('HAHAHAHAHA')
             logger.error('AAAAAAAAAAAAAAAAAAAAAA')
             logger.critical('NONONONONONONONONONO')

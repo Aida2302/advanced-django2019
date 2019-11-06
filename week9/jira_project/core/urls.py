@@ -10,12 +10,12 @@ router = DefaultRouter()
 urlpatterns = [
     path('tasks/', TaskAPIView.as_view()),
     path('tasks/comment/', TaskCommentAPIView.as_view()),
-    path('projects/', ProjectList.as_view())
+    # path('projects/', ProjectList.as_view())
 
 ] + router.urls
 
 router = routers.DefaultRouter()
-# router.register('projects', ProjectViewSet, base_name='core')
+router.register('projects', ProjectViewSet, base_name='core')
 router.register(r'blocks', BlockViewSet, base_name='core')
 
 

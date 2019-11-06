@@ -39,6 +39,9 @@ class ProjectViewSet(mixins.ListModelMixin,
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
         logger.info(f"{self.request.user} created document")
+        logger.warning('HAHAHAHAHA')
+        logger.error('AAAAAAAAAAAAAAAAAAAAAA')
+        logger.critical('NONONONONONONONONONO')
         return serializer.data
 
     def get_queryset(self):
@@ -53,12 +56,6 @@ class ProjectViewSet(mixins.ListModelMixin,
 
     @action(methods=['GET'], detail=True)
     def tasks(self, request, pk):
-        # project = get_object_or_404(Project, id=pk)
-
-        # try:
-        #     project = Project.objects.get(id=pk)
-        # except Project.DoesNotExist:
-        #     raise Http404
 
         instance = self.get_object()
         res = f'{instance.name}: tasks'

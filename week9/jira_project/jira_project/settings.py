@@ -177,16 +177,16 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(infoname)s -- %(asctime)s -- %(message)s',
+            'format': '%(levelname)s -- %(asctime)s -- %(message)s',
         },
         'simple': {
-            'format': '%(infoname)s -- %(message)s',
+            'format': '%(levelname)s -- %(message)s',
         }
     },
     'handlers': {
         'main_file': {
-            # 'info': 'ERROR',
-            # 'class': 'logging.FileHandler',
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/main') + '/main.log',
             'maxBytes': 1024*1024*5, # 5 MB
@@ -194,15 +194,15 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'console_handler': {
-            # 'info': 'WARNING',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         }
     },
     'loggers': {
         'main': {
-            'handlers': ['main_file', 'console_handler'],
-            'info': 'CRITICAL',
+            'handlers': ['main_file'],
+            'info': 'INFO',
         },
     },
 }

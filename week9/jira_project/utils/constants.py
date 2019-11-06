@@ -8,3 +8,6 @@ TASK_STATUSES = (
     (TASK_DONE, 'DONE'),
     (TASK_NEW, 'NEW')
 )
+
+
+TASK_ALLOWED_EXISTS = ['.jpg', '.png', '.txt']

@@ -1,6 +1,6 @@
 from django.db import models
 
-from core.constants import TASK_DONE, TASK_TODO, TASK_IN_PROGRESS, TASK_NEW, TASK_STATUSES
+from utils.constants import TASK_DONE, TASK_TODO, TASK_IN_PROGRESS, TASK_NEW, TASK_STATUSES
 from users.models import User
 
 
