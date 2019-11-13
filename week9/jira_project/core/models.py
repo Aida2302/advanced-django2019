@@ -2,6 +2,8 @@ from django.db import models
 
 from utils.constants import TASK_DONE, TASK_TODO, TASK_IN_PROGRESS, TASK_NEW, TASK_STATUSES
 from users.models import User
+from utils.upload import task_document_path
+from utils.validators import task_document_size, task_document_extension
 
 
 class Project(models.Model):
@@ -88,20 +90,49 @@ class Block(models.Model):
 
 
 class Task(models.Model):
-    name = models.CharField(max_length=100, blank=False)
-    description = models.TextField(max_length=300, blank=True)
+    document = models.FileField(upload_to=task_document_path, validators=[task_document_size, task_document_extension],
+                                null=True)
+    name = models.CharField(max_length=300, null=True, blank=True)
+    status = models.PositiveSmallIntegerField(choices=TASK_STATUSES, default=TASK_NEW)
+    description = models.TextField(default='')
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='tasks', null=True)
+    executor = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='my_tasks', null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
-    executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
-    block = models.ForeignKey(Block, on_delete=models.CASCADE)
-    # project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
+
+    # is_deleted = models.BooleanField(default=False)
+
+
 
     class Meta:
-        ordering = ('name', 'block',)
+        # unique_together = ('project', 'name')
+        ordering = ('name', 'status',)
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
+        db_table = 'my_tasks'
 
     def __str__(self):
-        return f'{self.name}: {self.creator}, {self.block}'
+        return self.name
+
+    def __repr__(self):
+        pass
+
+# class Task(models.Model):
+#     document = models.FileField(upload_to=task_document_path, validators=[task_document_size, task_document_extension],
+#                                 null=True)
+#     name = models.CharField(max_length=100, blank=False)
+#     description = models.TextField(max_length=300, blank=True)
+#     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
+#     executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
+#     status = models.PositiveSmallIntegerField(choices=TASK_STATUSES, default=TASK_NEW)
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
+#
+#     class Meta:
+#         ordering = ('name', 'status',)
+#         verbose_name = 'Task'
+#         verbose_name_plural = 'Tasks'
+#
+#     def __str__(self):
+#         return f'{self.name}: {self.creator}, {self.status}'
 
 
 class TaskDocument(models.Model):

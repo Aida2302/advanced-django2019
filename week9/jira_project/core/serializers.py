@@ -2,18 +2,19 @@ from core.models import Project, Task, Block, TaskDocument, TaskComment
 from rest_framework import serializers
 
 from users.models import User
+from users.serializers import UserSerializer
 
 
 class ProjectSerializer(serializers.ModelSerializer):
     # creator = UserSerializer()
     # my_name = serializers.SerializerMethodField()
-    creator_name = serializers.SerializerMethodField()
+    # creator_name = serializers.SerializerMethodField()
     creator_id = serializers.IntegerField(write_only=True)
-    tasks_count = serializers.IntegerField(default=0)
+    # tasks_count = serializers.IntegerField(default=0)
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'creator_name', 'creator_id', 'tasks_count')
+        fields = ('id', 'name', 'description', 'creator_id')
 
     def get_creator_name(self, obj):
         if obj.creator is not None:
@@ -33,7 +34,7 @@ class TaskSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100)
     description = serializers.CharField(max_length=255)
     executor = serializers.PrimaryKeyRelatedField(required=False, queryset=User.objects.all())
-    block = serializers.PrimaryKeyRelatedField(queryset=Block.objects.all())
+    status = serializers.IntegerField()
 
     class Meta:
         model = Task
@@ -46,6 +47,27 @@ class TaskSerializer(serializers.ModelSerializer):
                             creator=request.user,
                             executor=self.validated_data['executor'],
                             block=self.validated_data['block'])
+
+
+class TaskShortSerializer(serializers.ModelSerializer):
+    project_id = serializers.IntegerField(write_only=True)
+    creator = UserSerializer(read_only=True)
+    # document = serializers.FileField(write_only=True)
+    # document_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ('id', 'name', 'document', 'status', 'project_id', 'creator')
+
+    def get_document_url(self, obj):
+        if obj.document:
+            return self.context['request'].build_absolute_uri(obj.document.url)
+        return None
+
+
+class TaskFullSerializer(TaskShortSerializer):
+    class Meta(TaskShortSerializer.Meta):
+        fields = TaskShortSerializer.Meta.fields + ('priority', 'description')
 
 
 class TaskDocumentSerializer(serializers.ModelSerializer):

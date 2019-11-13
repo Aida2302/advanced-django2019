@@ -11,6 +11,6 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'block',)
+    list_display = ('id', 'name', 'status',)
 
 

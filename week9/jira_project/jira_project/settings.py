@@ -159,7 +159,7 @@ JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LEEWAY': 0,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=100),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=10),
     'JWT_AUDIENCE': None,
     'JWT_ISSUER': None,
 
@@ -170,7 +170,6 @@ JWT_AUTH = {
     'JWT_AUTH_COOKIE': None,
 
 }
-
 
 LOGGING = {
     'version': 1,
@@ -186,10 +185,10 @@ LOGGING = {
     'handlers': {
         'main_file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            # 'class': 'logging.FileHandler',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/main') + '/main.log',
-            'maxBytes': 1024*1024*5, # 5 MB
+            'filename': os.path.join(BASE_DIR, 'logs/core') + '/core.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 3,
             'formatter': 'verbose'
         },
@@ -200,12 +199,43 @@ LOGGING = {
         }
     },
     'loggers': {
-        'main': {
+        'core': {
             'handlers': ['main_file'],
-            'info': 'INFO',
+            'level': 'INFO',
         },
     },
 }
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(levelname)s -- %(asctime)s -- %(message)s',
+#         },
+#         'simple': {
+#             'format': '%(levelname)s -- %(message)s',
+#         }
+#     },
+#     'handlers': {
+#         'main_file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/main') + '/main.log',
+#             'formatter': 'verbose'
+#         },
+#         'console_handler': {
+#             'level': 'INFO',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple'
+#         }
+#     },
+#     'loggers': {
+#         'main': {
+#             'handlers': ['main_file'],
+#             'info': 'INFO',
+#         },
+#     },
+# }
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

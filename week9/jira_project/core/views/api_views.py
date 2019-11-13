@@ -7,6 +7,9 @@ from rest_framework.views import APIView
 from core.models import Project, Task, TaskComment, TaskDocument
 from core.serializers import ProjectSerializer, TaskSerializer, TaskCommentSerializer, TaskDocumentSerializer
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ProjectList(APIView):
     http_method_names = ['get', 'post']
@@ -69,6 +72,10 @@ class TaskAPIView(APIView):
         serializer = TaskSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.create(request)
+        logger.info(f"{self.request.user} created project")
+        logger.warning('HAHAHAHAHA')
+        logger.error('AAAAAAAAAAAAAAAAAAAAAA')
+        logger.critical('NONONONONONONONONONO')
         return Response(serializer.data)
 
 

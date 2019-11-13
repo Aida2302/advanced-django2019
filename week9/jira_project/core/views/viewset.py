@@ -1,14 +1,15 @@
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from core.models import Project, Block
-from core.serializers import ProjectSerializer, BlockSerializer
+from core.models import Project, Block, Task
+from core.serializers import ProjectSerializer, BlockSerializer, TaskFullSerializer, TaskShortSerializer
 
 import logging
 
@@ -30,19 +31,19 @@ class ProjectDetailViewSet(mixins.RetrieveModelMixin,
     serializer_class = ProjectSerializer
 
 
-class ProjectViewSet(mixins.ListModelMixin,
+class ProjectViewSet(mixins.CreateModelMixin,
+                     mixins.ListModelMixin,
                      viewsets.GenericViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = (IsAuthenticated, )
 
     def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
-        logger.info(f"{self.request.user} created document")
+        logger.info(f"{self.request.user} created project")
         logger.warning('HAHAHAHAHA')
         logger.error('AAAAAAAAAAAAAAAAAAAAAA')
         logger.critical('NONONONONONONONONONO')
-        return serializer.data
+        return serializer.save(creator=self.request.user)
 
     def get_queryset(self):
         queryset = self.queryset.filter(creator=self.request.user)
@@ -80,8 +81,30 @@ class BlockViewSet(mixins.RetrieveModelMixin,
         return self.queryset.all()
 
 
+class TaskViewSet(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = Task.objects.all()
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return TaskFullSerializer
+        if self.action == 'set_executor':
+            pass
+        return TaskShortSerializer
 
+    @action(methods=['PUT'], detail=True)
+    def set_executor(self, request, pk):
+        # request.data
+        return Response('executor updated')
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+        # logger.info(f"{self.request.user} created task: {serializer.data.get('name')}")
 
 
 
