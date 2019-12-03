@@ -6,11 +6,7 @@ from users.serializers import UserSerializer
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    # creator = UserSerializer()
-    # my_name = serializers.SerializerMethodField()
-    # creator_name = serializers.SerializerMethodField()
     creator_id = serializers.IntegerField(write_only=True)
-    # tasks_count = serializers.IntegerField(default=0)
 
     class Meta:
         model = Project
@@ -23,41 +19,51 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class BlockSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Block
         fields = '__all__'
         read_only_fields = ('project',)
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
     description = serializers.CharField(max_length=255)
-    executor = serializers.PrimaryKeyRelatedField(required=False, queryset=User.objects.all())
     status = serializers.IntegerField()
+    project_id = serializers.IntegerField(write_only=True)
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Task
         fields = '__all__'
         read_only_fields = ('creator',)
 
-    def create(self, request):
-        Task.objects.create(name=self.validated_data['name'],
-                            description=self.validated_data['description'],
-                            creator=request.user,
-                            executor=self.validated_data['executor'],
-                            block=self.validated_data['block'])
+    def create(self, validated_data):
+        task = Task.objects.create(**validated_data)
+        return task
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.status = validated_data.get('status', instance.status)
+        instance.description = validated_data.get('description', instance.description)
+        instance.project_id = validated_data.get('project_id', instance.project_id)
+
+        instance.save()
+        return instance
+
+    def validate_status(self, value):
+        if 1 < value > 3:
+            raise serializers.ValidationError('status options: [1, 2, 3]')
+        return value
 
 
 class TaskShortSerializer(serializers.ModelSerializer):
     project_id = serializers.IntegerField(write_only=True)
     creator = UserSerializer(read_only=True)
-    # document = serializers.FileField(write_only=True)
-    # document_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Task
-        fields = ('id', 'name', 'document', 'status', 'project_id', 'creator')
+        fields = ('id', 'name', 'status', 'project_id', 'creator')
 
     def get_document_url(self, obj):
         if obj.document:
@@ -91,5 +97,3 @@ class TaskCommentSerializer(serializers.ModelSerializer):
                                    creator=request.user,
                                    created_at=self.validated_data['created_at'],
                                    task=self.validated_data['task'])
-
-

@@ -1,6 +1,7 @@
+from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
@@ -34,3 +35,18 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         print(self.request.user)
         return User.objects.all()
+
+    @action(methods=['GET'], detail=False)
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
+
+class UserListViewSet(mixins.RetrieveModelMixin,
+                      mixins.UpdateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)

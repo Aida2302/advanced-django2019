@@ -33,10 +33,12 @@ class ProjectDetailViewSet(mixins.RetrieveModelMixin,
 
 class ProjectViewSet(mixins.CreateModelMixin,
                      mixins.ListModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
                      viewsets.GenericViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         logger.info(f"{self.request.user} created project")
@@ -57,7 +59,6 @@ class ProjectViewSet(mixins.CreateModelMixin,
 
     @action(methods=['GET'], detail=True)
     def tasks(self, request, pk):
-
         instance = self.get_object()
         res = f'{instance.name}: tasks'
 
@@ -85,6 +86,7 @@ class TaskViewSet(mixins.CreateModelMixin,
                   mixins.RetrieveModelMixin,
                   mixins.UpdateModelMixin,
                   mixins.DestroyModelMixin,
+                  mixins.ListModelMixin,
                   viewsets.GenericViewSet):
     queryset = Task.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -104,7 +106,4 @@ class TaskViewSet(mixins.CreateModelMixin,
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
-        # logger.info(f"{self.request.user} created task: {serializer.data.get('name')}")
-
-
-
+        logger.info(f"{self.request.user} created task: {serializer.data.get('name')}")

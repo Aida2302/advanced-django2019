@@ -8,4 +8,6 @@ from users.models import User, Profile
 def user_created(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        instance.send_greeting_email()
+        instance.send_activate_sms()
     print(instance)

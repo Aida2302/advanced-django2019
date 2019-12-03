@@ -89,50 +89,47 @@ class Block(models.Model):
         return f'{self.name}: {self.project}'
 
 
-class Task(models.Model):
-    document = models.FileField(upload_to=task_document_path, validators=[task_document_size, task_document_extension],
-                                null=True)
+class BaseTask(models.Model):
     name = models.CharField(max_length=300, null=True, blank=True)
-    status = models.PositiveSmallIntegerField(choices=TASK_STATUSES, default=TASK_NEW)
     description = models.TextField(default='')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='tasks', null=True)
-    executor = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='my_tasks', null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
 
-    # is_deleted = models.BooleanField(default=False)
+    def get_short_name(self):
+        return self.name[:3]
 
+    @property
+    def short_name(self):
+        return self.name[:3]
 
+    def set_name(self, name):
+        self.name = name
+        self.save()
+
+    def show_info(self):
+        raise NotImplementedError(
+            'must be implemented'
+        )
 
     class Meta:
-        # unique_together = ('project', 'name')
-        ordering = ('name', 'status',)
+        abstract = True
+
+
+class Task(BaseTask):
+    # document = models.FileField(upload_to=task_document_path, validators=[task_document_size, task_document_extension],
+    #                             null=True)
+    status = models.PositiveSmallIntegerField(choices=TASK_STATUSES, default=TASK_NEW)
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='tasks', null=True)
+    executor = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='tasks', null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
+
+    class Meta(BaseTask.Meta):
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
-        db_table = 'my_tasks'
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
         pass
-
-# class Task(models.Model):
-#     document = models.FileField(upload_to=task_document_path, validators=[task_document_size, task_document_extension],
-#                                 null=True)
-#     name = models.CharField(max_length=100, blank=False)
-#     description = models.TextField(max_length=300, blank=True)
-#     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks')
-#     executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
-#     status = models.PositiveSmallIntegerField(choices=TASK_STATUSES, default=TASK_NEW)
-#     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
-#
-#     class Meta:
-#         ordering = ('name', 'status',)
-#         verbose_name = 'Task'
-#         verbose_name_plural = 'Tasks'
-#
-#     def __str__(self):
-#         return f'{self.name}: {self.creator}, {self.status}'
 
 
 class TaskDocument(models.Model):
